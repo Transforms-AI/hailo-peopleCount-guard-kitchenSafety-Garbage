@@ -1,0 +1,6 @@
+notebook
+ipykernel
+degirum
+degirum_tools
+degirum_cli
+boxmot==11.0.6

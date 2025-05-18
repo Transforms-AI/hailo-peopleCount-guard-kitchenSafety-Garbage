@@ -1,0 +1,14 @@
+{
+    "0": "hat",
+    "1": "no_hat",
+    "2": "mask",
+    "3": "no_mask",
+    "4": "gloves",
+    "5": "no_gloves",
+    "6": "food_uncover",
+    "7": "pilgrim",
+    "8": "no_pilgrim",
+    "9": "waste",
+    "10": "incorrect_mask",
+    "11": "food_processing"
+}

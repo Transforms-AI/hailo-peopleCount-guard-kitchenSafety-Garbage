@@ -1,0 +1,37 @@
+{
+    "ConfigVersion": 10,
+    "Checksum": "3314f4fcd9099b9085ee79d010affe0c3975ab2be811d26fca7cf252c92e6239",
+    "DEVICE": [
+      {
+        "DeviceType": "HAILO8",
+        "RuntimeAgent": "HAILORT",
+        "SupportedDeviceTypes": "HAILORT/HAILO8"
+      }
+    ],
+    "PRE_PROCESS": [
+      {
+        "InputType": "Image",
+        "ImageBackend": "opencv",
+        "InputPadMethod": "stretch",
+        "InputResizeMethod": "bilinear",
+        "InputN": 1,
+        "InputC": 3,
+        "InputH": 224,
+        "InputW": 224,        
+        "InputQuantEn": true
+      }
+    ],
+    "MODEL_PARAMETERS": [
+      {
+        "ModelPath": "guard_classification_model.hef"
+      }
+    ],
+    "POST_PROCESS": [
+      {
+        "OutputPostprocessType": "Classification",
+        "OutputNumClasses": 2,
+        "OutputClassIDAdjustment": 1,
+        "LabelsPath": "labels_guard_classification_model.json"
+      }
+    ]
+  }
