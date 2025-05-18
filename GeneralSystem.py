@@ -90,8 +90,8 @@ class GeneralSystem:
                     sleep(0.1)
                     continue
                 
-                # Resizing the frame to 640x640 here
-                frame = cv2.resize(frame, (640, 640)) # (width, height)
+                # Resizing the frame to 640x480 here, gives better result.
+                frame = cv2.resize(frame, (640, 480)) # (width, height)
 
                 if first_time:
                     last_datasend_time = time.time()
@@ -192,7 +192,9 @@ class GeneralSystem:
                     # Prepare data for sending
                     data, files = self.generate_data(start_time, end_time)
 
-                    # Send data with image
+                    # New logic needed for sending data and generate data shall be returning a list. the list will hold the file.
+                    
+
                     self.data_uploader.send_data(data, files=files)
                     print(f"Data sent: {frame_count} took: {(time.time() - data_send_start_time)*1000:.2f} ms. \n data: {data}")
                     last_datasend_time = time.time()

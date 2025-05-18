@@ -149,7 +149,7 @@ class GuardSystem(GeneralSystem):
         inference_result_guard_detection = self.guard_detection_model(frame)
 
         # Print Inference result len
-        print(f"Detection count before classification filter: {len(inference_result_guard_detection.results)}")
+        # print(f"Detection count before classification filter: {len(inference_result_guard_detection.results)}")
 
         # Logic from tanim bhai
         filtered_boxes, filtered_scores, filtered_classes = [], [], []
@@ -186,7 +186,7 @@ class GuardSystem(GeneralSystem):
                 filtered_scores.append(item['score']) # confidence score
                 filtered_classes.append(item['category_id']) # 0 for guard, 1 for not_guard
             
-        print(f"after clssification filter: len(filtered_boxes)={len(filtered_boxes)}")
+        # print(f"after clssification filter: len(filtered_boxes)={len(filtered_boxes)}")
         
         return filtered_boxes, filtered_scores, filtered_classes, frame
 

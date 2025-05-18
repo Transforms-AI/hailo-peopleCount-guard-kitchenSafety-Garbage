@@ -8,7 +8,7 @@
     "livestream": true,
     "iou_threshold": 0.01, 
     "video_source_rename_later" : "rtsp://admin:j40a@234@192.168.8.201:554/Streaming/Channels/101",
-    "video_source" : "videos/guard_demo.mp4",
+    "video_source" : "videos/people-count-test.mp4",
     "data_send_url" : "https://hajjdrf.transformsai.com/camera/create-counter-history/",
     "heartbeat_url": "https://hajjdrf.transformsai.com/camera/create-camera-heartbeat/",
     "X-Secret-Key" : "e5oNH8Yhx8eJml4bSxYw",
@@ -17,5 +17,6 @@
     "name": "people_count",
     "model_name": "best_person_model",
     "zoo_url": "./models/best_person_model",
-    "type": "PEOPLE_COUNT"
+    "type": "PEOPLE_COUNT",
+    "debug": true
 }

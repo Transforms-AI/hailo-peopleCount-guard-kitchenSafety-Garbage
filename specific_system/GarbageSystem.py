@@ -65,8 +65,10 @@ class GarbageSystem(GeneralSystem):
             overlaps_with_person = any(does_boxes_overlap_by(garbage_box, person_box) for person_box in person_boxes)
             
             if not overlaps_with_person: # no overlap
+                print(f"Garbage detected: {item['label']} with score: {item['score']}")
+                print(f"Garbage box: {garbage_box}")
                 cv2.rectangle( frame, 
-                    (garbage_box[0], garbage_box[1]),  (garbage_box[2], garbage_box[3]),
+                    (int(garbage_box[0]), int(garbage_box[1])),  (int(garbage_box[2]), int(garbage_box[3])),
                     (0, 255, 0), 2 # green
                 )
         

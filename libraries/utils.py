@@ -88,6 +88,26 @@ def does_box_overlap_enough(box1, box2, threshold):
     #print(f"Overlap Ratio 1: {overlap_ratio_1}, Overlap Ratio 2: {overlap_ratio_2}")
     return overlap_ratio_1 >= threshold or overlap_ratio_2 >= threshold
 
+def drawCircle(debug, frame, centerX, centerY, radius=1, color=(0, 0, 255), thickness=2):
+    if not debug:
+        return
+    cv2.circle(frame, center=(int(centerX), int(centerY)), radius=radius, color=color, thickness=thickness)
+
+def drawRectangle(debug, frame, xmin, ymin, xmax, ymax, color=(255, 255, 255), thickness=1):
+    if not debug:
+        return
+    cv2.rectangle(frame, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color=color, thickness=thickness)
+
+
+def drawText(debug, frame, text, orgX, orgY, color=(55, 255, 0), fontScale=0.5, thickness=2, fontFace=cv2.FONT_HERSHEY_SIMPLEX):
+    if not debug:
+        return
+    cv2.putText(frame, text, org=(int(orgX), int(orgY)), fontFace=fontFace, fontScale=fontScale, color=color, thickness=thickness)
+
+def drawLine(debug, frame, pt1, pt2, color=(255, 255, 0), thickness=2):
+    if not debug:
+        return
+    cv2.line(frame, pt1, pt2, color=color, thickness=thickness)
 
 # if __name__ == "__main__":
 #     # Test the functions

@@ -30,7 +30,7 @@
       {
         "OutputPostprocessType": "Classification",
         "OutputNumClasses": 2,
-        "OutputClassIDAdjustment": 1,
+        "OutputClassIDAdjustment": 0,
         "LabelsPath": "labels_guard_classification_model.json"
       }
     ]
