@@ -274,7 +274,5 @@ echo "  3. Run a test to verify the installation"
 echo ""
 echo "You do not need to log in for this to happen."
 echo ""
-echo "Press ENTER to reboot now, or CTRL+C to cancel and reboot later."
-read
-echo "Rebooting..."
+echo "Rebooting Now..."
 sudo reboot
