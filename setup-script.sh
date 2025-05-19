@@ -1,18 +1,16 @@
-# Create directory for project
 #!/bin/bash
 set -e
 
 PROJECT_DIR="$HOME/hajj_system"
 VENV_DIR="$PROJECT_DIR/degirum_env"
 REPO_URL="https://github.com/Transforms-AI/hailo-peopleCount-guard-kitchenSafety-Garbage.git"
+REPO_DIR="$PROJECT_DIR/hailo-peopleCount-guard-kitchenSafety-Garbage"
 
-
-# Function to print colored output for better readability
+# Function to print colored output
 print_colored() {
     echo -e "\e[1;34m$1\e[0m"
 }
 
-# Function to check if command was successful
 check_status() {
     if [ $? -eq 0 ]; then
         echo -e "\e[1;32m✓ Success\e[0m"
@@ -22,6 +20,7 @@ check_status() {
         exit 1
     fi
 }
+
 
 # Script header
 print_colored "====================================================================="
@@ -35,54 +34,41 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 
-# Step 1: Update system
 print_colored "\n[1/10] Updating system packages..."
-# Set environment variables to avoid interactive prompts
 export DEBIAN_FRONTEND=noninteractive
-apt update && apt full-upgrade -y -o Dpkg::Options::="--force-confnew"
+sudo apt update && sudo apt full-upgrade -y -o Dpkg::Options::="--force-confnew"
 check_status
 
-# Step 2: Update Raspberry Pi firmware
 print_colored "\n[2/10] Updating Raspberry Pi firmware..."
-rpi-eeprom-update -a -y
+sudo rpi-eeprom-update -a -y
 check_status
 
-# Step 3: Configure PCIe settings
 print_colored "\n[3/10] Configuring PCIe settings..."
 if ! grep -q "dtparam=pciex1_gen=3" /boot/firmware/config.txt; then
     echo "Adding PCIe Gen 3.0 speed configuration to /boot/firmware/config.txt"
-    echo "dtparam=pciex1_gen=3" >> /boot/firmware/config.txt
+    echo "dtparam=pciex1_gen=3" | sudo tee -a /boot/firmware/config.txt
     check_status
 else
     echo "PCIe Gen 3.0 speed configuration already exists in config.txt"
 fi
 
-# Alternative method for configuring PCIe via raspi-config (commented out)
-# This can be uncommented and used instead of directly modifying config.txt if needed
-# echo "Configuring PCIe settings via raspi-config..."
-# raspi-config nonint do_pciex1_gen 3
-# check_status
-
-# Step 4: Install Hailo Tools
 print_colored "\n[4/10] Installing Hailo Tools..."
-DEBIAN_FRONTEND=noninteractive apt install -y -o Dpkg::Options::="--force-confnew" hailo-all
+sudo apt install -y -o Dpkg::Options::="--force-confnew" hailo-all
 check_status
 
-# Step 5: Install Python Hailo runtime
 print_colored "\n[5/10] Installing Python Hailo runtime..."
-DEBIAN_FRONTEND=noninteractive apt install -y -o Dpkg::Options::="--force-confnew" python3-hailort
+sudo apt install -y -o Dpkg::Options::="--force-confnew" python3-hailort
 check_status
 
-# Remove Step 6 (Hailo verification) - will be done after reboot
-# Step 6: Set up project directory and clone repository
-print_colored "\n[6/9] Setting up project directory and cloning repository..."
-mkdir -p $PROJECT_DIR
-cd $PROJECT_DIR
 
-# Clone the repository
-if [ -d "hailo-peopleCount-guard-kitchenSafety-Garbage" ]; then
+# Step 6: Set up project directory and clone repository
+print_colored "\n[6/10] Cloning repository..."
+mkdir -p "$PROJECT_DIR"
+cd "$PROJECT_DIR"
+
+if [ -d "$REPO_DIR" ]; then
     echo "Repository already exists. Pulling latest changes..."
-    cd hailo-peopleCount-guard-kitchenSafety-Garbage
+    cd "$REPO_DIR"
     git pull
     echo "=====> Current repo directory (pulled): $(pwd)"
     check_status
@@ -90,17 +76,13 @@ else
     echo "Cloning repository..."
     git clone "$REPO_URL"
     check_status
-    cd hailo-peopleCount-guard-kitchenSafety-Garbage
-    echo "=====> Current repo directory (cloned): $(pwd)"   
-    
+    cd "$REPO_DIR"
+    echo "=====> Current repo directory (cloned): $(pwd)"
 fi
 ls -lh
 
-# Create virtual environment
-# Step 7: Set up Python virtual environment and installing dependencies
-print_colored "\n[7/9] Setting up Python virtual environment and installing dependencies..."
+print_colored "\n[7/10] Setting up Python virtual environment and installing dependencies..."
 
-# Check Python version
 PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")' 2>/dev/null)
 if [[ ! "$PYTHON_VERSION" == "3.11" ]]; then
     echo "Warning: This script requires Python 3.11, but found Python $PYTHON_VERSION"
@@ -113,9 +95,7 @@ if [[ ! "$PYTHON_VERSION" == "3.11" ]]; then
     fi
 fi
 
-# Install python3-venv which is needed for virtual environment creation
-print_colored "Installing python3-venv package..."
-apt install -y python3-venv python3-full
+sudo apt install -y python3-venv python3-full
 check_status
 
 if [ ! -d "$VENV_DIR" ]; then
@@ -126,14 +106,6 @@ else
     echo "Virtual environment already exists."
 fi
 
-# Activate virtual environment and install dependencies
-echo "Installing dependencies..."
-if [ ! -f "$VENV_DIR/bin/activate" ]; then
-    echo "Error: Virtual environment activation script not found."
-    exit 1
-fi
-
-# Use . instead of source for better compatibility
 . $VENV_DIR/bin/activate
 check_status
 
@@ -142,6 +114,7 @@ check_status
 
 pip install -r requirements.txt
 check_status
+
 
 # Download and install Hailo runtime wheel
 echo "Downloading Hailo runtime wheel..."
@@ -308,7 +281,7 @@ echo "  3. Run a test to verify the installation"
 echo ""
 echo "You do not need to log in for this to happen."
 echo ""
-echo "Press any key to reboot now, or CTRL+C to cancel and reboot later."
-read -n 1 -s
+echo "Press ENTER to reboot now, or CTRL+C to cancel and reboot later."
+read
 echo "Rebooting..."
-reboot
+sudo reboot
