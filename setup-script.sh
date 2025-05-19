@@ -84,13 +84,16 @@ if [ -d "hailo-peopleCount-guard-kitchenSafety-Garbage" ]; then
     echo "Repository already exists. Pulling latest changes..."
     cd hailo-peopleCount-guard-kitchenSafety-Garbage
     git pull
+    pwd
     check_status
 else
     echo "Cloning repository..."
     git clone "$REPO_URL"
     check_status
     cd hailo-peopleCount-guard-kitchenSafety-Garbage
+    pwd
     ls -lh
+    
 fi
 
 # Create virtual environment
