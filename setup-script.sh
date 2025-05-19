@@ -84,17 +84,17 @@ if [ -d "hailo-peopleCount-guard-kitchenSafety-Garbage" ]; then
     echo "Repository already exists. Pulling latest changes..."
     cd hailo-peopleCount-guard-kitchenSafety-Garbage
     git pull
-    pwd
+    print_colored "directory location: $(pwd)"
     check_status
 else
     echo "Cloning repository..."
     git clone "$REPO_URL"
     check_status
     cd hailo-peopleCount-guard-kitchenSafety-Garbage
-    pwd
-    ls -lh
+    print_colored "directory location: $(pwd)"   
     
 fi
+ls -lh
 
 # Create virtual environment
 # Step 7: Set up Python virtual environment and installing dependencies
