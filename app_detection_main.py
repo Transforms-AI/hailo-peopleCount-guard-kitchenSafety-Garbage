@@ -6,7 +6,7 @@ from enum import Enum
 from specific_system.GarbageSystem import GarbageSystem
 from specific_system.SafetySystem import SafetySystem
 from specific_system.CountSystem import CountSystem
-from specific_system.guardSystem import GuardSystem
+from specific_system.GuardSystem import GuardSystem
 
 class SystemType(Enum):
     GARBAGE = 0
