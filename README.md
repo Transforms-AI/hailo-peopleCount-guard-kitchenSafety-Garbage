@@ -13,8 +13,8 @@ https://github.com/Transforms-AI/hailo-peopleCount-guard-kitchenSafety-Garbage.g
 3. [Installation](#installation)  
 4. [Additional Resources](#additional-resources) 
 
-## Setup script
-Run this script, this will do the rest.
+# Setup script - Automatic setup
+Run this script, this will do the rest. take this setup-script.sh to any raspberry pi you wnat to setup. And then run the bash command
 
 First make the setup-script.sh executabel
 ```bash
@@ -22,40 +22,74 @@ chmod +x setup-script.sh
 ```
 then run this
 ```bash
-sudo ./setup-script.sh
+bash ./setup-script.sh
 ```
+This script will do these things-
+1. Configure raspberry pi for PCIe Gen3 speed
+2. Setup raspberry pi with hailo and hailort
+3. Git clone this repo
+4. Create a virtual env and activate
+5. Install requirements
+6. Install hailort whl in the venv
+7. Create a post_reboot script and config it to run only once and self delete after that
+8. Automatically reboots
+9. After reboot automatically runs the post_reboot script on background. you can see the output in ~$hailort.log
+10. post_reboot checks if everything is okay, if the below error is found Then fixes it automatically.
+```bash
+[HailoRT] [error] CHECK failed - Driver version (4.18.0) is different from library version (4.20.0)
+[HailoRT] [error] Driver version mismatch, status HAILO_INVALID_DRIVER_VERSION(76)``` 
+
+11. If everything OK. post_processor slef distucts
+12. Takes another reboot.
+13. Now the system is ready to run models.
+  
+
+
+
 If any problem arises you can simply use the manual step.
 
 ## Download Models and demo video
+activate the virtual environment the run this to get all the models and test video.
+
 ``bash
-./download.sh
+bash ./download.sh
 ```
 it should download :
-best_person_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\best_person_model\
-Using: gdown "https://drive.google.com/uc?id=1raBgfsNcvIiHFaUCrQCLEaEJ7BzdpKEn"
+```bash
+# best_person_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\best_person_model\
+#Using: 
+gdown "https://drive.google.com/uc?id=1raBgfsNcvIiHFaUCrQCLEaEJ7BzdpKEn"
 
-garbage_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\garbage_detection_model\
-Using: gdown "https://drive.google.com/uc?id=1qESwifvEWmB-apw38TZ-QbSKkP6bBbNf"
+# garbage_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\garbage_detection_model\
+#Using: 
+gdown "https://drive.google.com/uc?id=1qESwifvEWmB-apw38TZ-QbSKkP6bBbNf"
 
-guard_classification_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_classification_model
-using: gdown "https://drive.google.com/uc?id=1_evd0XNRnVmaNnNDe-iBOxXAwn0OIyTa"
+# guard_classification_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_classification_model
+#Using: 
+gdown "https://drive.google.com/uc?id=1_evd0XNRnVmaNnNDe-iBOxXAwn0OIyTa"
 
-guard_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_detection_model\
-using: gdown "https://drive.google.com/uc?id=1bTpwsmObIDe4apdanvIJri2ZFgeFs2LQ"
+# guard_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_detection_model\
+#Using: 
+gdown "https://drive.google.com/uc?id=1bTpwsmObIDe4apdanvIJri2ZFgeFs2LQ"
 
-safety_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\safety_detection_model\
-using: gdown "https://drive.google.com/uc?id=13VA4VwyxK8AZ3SD7_WqGkqw5fvLjzZir"
+# safety_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\safety_detection_model\
+#using:
+gdown "https://drive.google.com/uc?id=13VA4VwyxK8AZ3SD7_WqGkqw5fvLjzZir"
+```
 
 Download some videos to this hailo-peopleCount-guard-kitchenSafety-Garbage\videos\
 using: 
+```bash
 gdown "https://drive.google.com/uc?id=1BBRVaGU7kY8a_OA60Xg_lj-JDdvLeC_n"
 gdown "https://drive.google.com/uc?id=1wDAboybnEMJHMO8O5z6JOCivTmfTLZS6"
 gdown "https://drive.google.com/uc?id=1LRbN2BUi-MKlmaRaymw3bY_Mwn8iN2sv"
 gdown "https://drive.google.com/uc?id=1PnGnI5TE7qeLVBHmpYEPGnx70cbZ3e97"
-
-
+```
 
 ---
+
+# **Manual Setup**
+
 ## **Setting up your raspberry pi**
 If using for the first time.
 
