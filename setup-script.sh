@@ -27,13 +27,6 @@ print_colored "=================================================================
 print_colored "    Raspberry Pi Setup Script for DeGirum PySDK and Hailo Hardware   "
 print_colored "====================================================================="
 
-# Check if running as root
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script as root or with sudo."
-    exit 1
-fi
-
-
 print_colored "\n[1/10] Updating system packages..."
 export DEBIAN_FRONTEND=noninteractive
 sudo apt update && sudo apt full-upgrade -y -o Dpkg::Options::="--force-confnew"
