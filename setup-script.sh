@@ -84,14 +84,14 @@ if [ -d "hailo-peopleCount-guard-kitchenSafety-Garbage" ]; then
     echo "Repository already exists. Pulling latest changes..."
     cd hailo-peopleCount-guard-kitchenSafety-Garbage
     git pull
-    print_colored "directory location: $(pwd)"
+    echo "=====> Current repo directory (pulled): $(pwd)"
     check_status
 else
     echo "Cloning repository..."
     git clone "$REPO_URL"
     check_status
     cd hailo-peopleCount-guard-kitchenSafety-Garbage
-    print_colored "directory location: $(pwd)"   
+    echo "=====> Current repo directory (cloned): $(pwd)"   
     
 fi
 ls -lh
