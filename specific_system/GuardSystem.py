@@ -127,15 +127,26 @@ class GuardSystem(GeneralSystem):
         """
 
         # Check if the inference is empty, meaning no gurad present in the frame
-        if not inference_result:
-            print("WARNING: Empty inference result in check_if_it_is_guard, Maybe no guard present in the frame")
-            return False
+        # if not inference_result:
+        #     print("WARNING: Empty inference result in check_if_it_is_guard, Maybe no guard present in the frame")
+        #     return False
 
         # Check if we have 'results' attribute or if it's already a list
         if hasattr(inference_result, 'results'):
             results = inference_result.results
         else:
             results = inference_result
+
+        # Check if we have at least two results, one for guard and one for not_guard
+        if len(results) == 0:
+            print("WARNING: Empty inference result detected in check_if_it_is_guard, Maybe no guard present in the frame")
+            return False
+        if len(results) < 2:
+            print(f"WARNING: Insufficient results in check_if_it_is_guard. Only {len(results)} elements: {results}")
+            # If there's exactly one result and it's a guard, return True
+            if len(results) == 1 and results[0]['label'] == 'guard':
+                return True
+            return False
         
         # Check if guard's probability >= not_guard's probability
         if results[0]['probability'] >= results[1]['probability']:
