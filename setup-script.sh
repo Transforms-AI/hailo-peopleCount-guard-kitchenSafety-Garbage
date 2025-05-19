@@ -2,9 +2,9 @@
 set -e
 
 PROJECT_DIR="$HOME/hajj_system"
-VENV_DIR="$PROJECT_DIR/degirum_env"
 REPO_URL="https://github.com/Transforms-AI/hailo-peopleCount-guard-kitchenSafety-Garbage.git"
 REPO_DIR="$PROJECT_DIR/hailo-peopleCount-guard-kitchenSafety-Garbage"
+VENV_DIR="$REPO_DIR/degirum_env"
 
 # Function to print colored output
 print_colored() {
@@ -53,9 +53,38 @@ print_colored "\n[5/10] Installing Python Hailo runtime..."
 sudo apt install -y -o Dpkg::Options::="--force-confnew" python3-hailort
 check_status
 
+# Setting up streaming for raspberry pi
+print_colored "\n[6/10] Installing and configuring Mosquitto broker..."
 
-# Step 6: Set up project directory and clone repository
-print_colored "\n[6/10] Cloning repository..."
+# Install Mosquitto and clients
+sudo apt-get install -y mosquitto mosquitto-clients
+check_status
+
+# Enable Mosquitto to start on boot
+sudo systemctl enable mosquitto.service
+check_status
+
+# Configure Mosquitto for MQTT and WebSockets
+sudo tee /etc/mosquitto/mosquitto.conf > /dev/null << EOF
+listener 1883
+protocol mqtt
+
+listener 9001
+protocol websockets
+
+allow_anonymous true
+EOF
+
+sudo systemctl restart mosquitto
+check_status
+
+# Show Mosquitto status
+mosquitto -v || true
+check_status
+
+
+# Step 7: Set up project directory and clone repository
+print_colored "\n[7/10] Cloning repository..."
 mkdir -p "$PROJECT_DIR"
 cd "$PROJECT_DIR"
 
@@ -74,7 +103,7 @@ else
 fi
 ls -lh
 
-print_colored "\n[7/10] Setting up Python virtual environment and installing dependencies..."
+print_colored "\n[8/10] Setting up Python virtual environment and installing dependencies..."
 
 PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")' 2>/dev/null)
 if [[ ! "$PYTHON_VERSION" == "3.11" ]]; then
@@ -130,7 +159,7 @@ check_status
 
 
 # Download model files
-print_colored "\n[8/9] Downloading model files and videos..."
+print_colored "\n[9/10] Downloading model files and videos..."
 cd $PROJECT_DIR/hailo-peopleCount-guard-kitchenSafety-Garbage
 
 # Ensure gdown is installed in the virtual environment
@@ -149,16 +178,17 @@ deactivate
 
 
 # Create a launch script for testing
-# Step 9: Create post-reboot check script and auto-run on login
+# Step 10: Create post-reboot check script and auto-run on login
 
-print_colored "\n[9/9] Creating post-reboot check script..."
+print_colored "\n[10/10] Creating post-reboot check script..."
 
 cat > $PROJECT_DIR/post_reboot_check.sh << 'EOS'
 #!/bin/bash
 set -e
 
 PROJECT_DIR="$HOME/hajj_system"
-VENV_DIR="$PROJECT_DIR/degirum_env"
+REPO_DIR="$PROJECT_DIR/hailo-peopleCount-guard-kitchenSafety-Garbage"
+VENV_DIR="$REPO_DIR/degirum_env"
 
 print_colored() {
     echo -e "\e[1;34m$1\e[0m"
