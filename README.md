@@ -201,6 +201,8 @@ This script will:
 
 If the test runs successfully, your environment is properly configured.  
 
+
+
 ## Download Models and demo video
 activate the virtual environment the run this to get all the models and test video. The git repo will not have any models. If you are using the automatic scipt 
 

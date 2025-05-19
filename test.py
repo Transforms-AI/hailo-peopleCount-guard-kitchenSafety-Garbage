@@ -52,20 +52,18 @@ if __name__ == "__main__":
         print("Running inference on Hailo device")
 
         inference_host_address = "@local"
-        zoo_url = "degirum/hailo"
-        token = ""
+        zoo_url = "./models/guard_detection_model"
+        # token = ""
 
         # Set model name and image source
-        model_name = "yolov8n_relu6_coco--640x640_quant_hailort_hailo8l_1"
-        image_source = "assets/ThreePersons.jpg"
-
+        model_name = "guard_detection_model"
+        image_source = "input/guard_1.png"
         # Load AI model
         try:
             model = dg.load_model(
                 model_name=model_name,
                 inference_host_address=inference_host_address,
                 zoo_url=zoo_url,
-                token=token,
                 device_type=device_type,
             )
         except Exception as e:
