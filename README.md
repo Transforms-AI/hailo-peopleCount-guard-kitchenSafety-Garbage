@@ -8,6 +8,7 @@ This repository provides a comprehensive guide on using **DeGirum PySDK**, **DeG
 
 ### Automatic setup
 1. [Setup script - Automatic setup](#setup-script---automatic-setup)
+2. [Change config file](#change-config-file)
 
 ### Manual setup
 1. [Setting up your raspberry pi](#setting-up-your-raspberry-pi)
@@ -16,7 +17,8 @@ This repository provides a comprehensive guide on using **DeGirum PySDK**, **DeG
 4. [Resources download](#download-models-and-demo-video)
 5. [Degirum sources](#additional-resources) 
 
-# Setup script - Automatic setup
+# Automatic setup
+## Setup script - Automatic setup
 Run this script, this will do the rest. take this setup-script.sh to any raspberry pi you wnat to setup. And then run the bash command
 
 First make the setup-script.sh executabel
@@ -48,6 +50,21 @@ This script will do these things-
   
 
 If any problem arises you can simply use the manual step.
+
+## Change config file
+To check the output stream on the website, you have to config the local ip and sn
+from 
+```bash
+cd hailo-peopleCount-guard-kitchenSafety-Garbage/config/config_guard_detection.json
+```
+Change this lines accordingly
+```bash
+"sn" : "HEADCOUNT1"
+# and
+"local_ip": "192.168.8.101"
+```
+
+
 
 
 ---
