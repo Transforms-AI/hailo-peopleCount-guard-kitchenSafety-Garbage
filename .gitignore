@@ -1,6 +1,7 @@
 degirum_env/
 __pycache__
 videos/
+output/
 models/best_person_model/best_person_model.hef
 models/garbage_detection_model/garbage_detection_model.hef
 models/guard_classification_model/guard_classification_model.hef
