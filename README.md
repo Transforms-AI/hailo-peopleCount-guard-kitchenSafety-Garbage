@@ -13,6 +13,48 @@ https://github.com/Transforms-AI/hailo-peopleCount-guard-kitchenSafety-Garbage.g
 3. [Installation](#installation)  
 4. [Additional Resources](#additional-resources) 
 
+## Setup script
+Run this script, this will do the rest.
+
+First make the setup-script.sh executabel
+```bash
+chmod +x setup-script.sh
+```
+then run this
+```bash
+sudo ./setup-script.sh
+```
+If any problem arises you can simply use the manual step.
+
+## Download Models and demo video
+``bash
+./download.sh
+```
+it should download :
+best_person_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\best_person_model\
+Using: gdown "https://drive.google.com/uc?id=1raBgfsNcvIiHFaUCrQCLEaEJ7BzdpKEn"
+
+garbage_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\garbage_detection_model\
+Using: gdown "https://drive.google.com/uc?id=1qESwifvEWmB-apw38TZ-QbSKkP6bBbNf"
+
+guard_classification_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_classification_model
+using: gdown "https://drive.google.com/uc?id=1_evd0XNRnVmaNnNDe-iBOxXAwn0OIyTa"
+
+guard_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_detection_model\
+using: gdown "https://drive.google.com/uc?id=1bTpwsmObIDe4apdanvIJri2ZFgeFs2LQ"
+
+safety_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\safety_detection_model\
+using: gdown "https://drive.google.com/uc?id=13VA4VwyxK8AZ3SD7_WqGkqw5fvLjzZir"
+
+Download some videos to this hailo-peopleCount-guard-kitchenSafety-Garbage\videos\
+using: 
+gdown "https://drive.google.com/uc?id=1BBRVaGU7kY8a_OA60Xg_lj-JDdvLeC_n"
+gdown "https://drive.google.com/uc?id=1wDAboybnEMJHMO8O5z6JOCivTmfTLZS6"
+gdown "https://drive.google.com/uc?id=1LRbN2BUi-MKlmaRaymw3bY_Mwn8iN2sv"
+gdown "https://drive.google.com/uc?id=1PnGnI5TE7qeLVBHmpYEPGnx70cbZ3e97"
+
+
+
 ---
 ## **Setting up your raspberry pi**
 If using for the first time.
@@ -75,6 +117,12 @@ Reboot your Raspberry Pi with sudo reboot for these settings to take effect.
   ```bash
   sudo apt install python3-hailort
   ```
+  Also, enable the HailoRT Multi-Process service as per HailoRT documentation:  
+
+  ```bash
+  sudo systemctl enable --now hailort.service  # for Ubuntu
+  ```  
+
   You have to also download the hailort wheel and install it in your virtual environment. We will do it in the installations section later.
 
 - **Python 3.11**: Ensure Python is installed on your system. You can check your Python version using:  
