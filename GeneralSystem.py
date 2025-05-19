@@ -14,7 +14,7 @@ from libraries.stream_receiver import StreamReceiver
 from libraries.datasend import DataUploader
 from libraries.async_capture import VideoCaptureAsync
 
-from emulator.emu_utils import generate_image
+# from emulator.emu_utils import generate_image
 
 class GeneralSystem:
     def __init__(self, config_path):
