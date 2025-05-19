@@ -4,14 +4,17 @@
 This repository provides a comprehensive guide on using **DeGirum PySDK**, **DeGirum Tools**, and **Hailo hardware** for efficient AI inference. These tools simplify edge AI development by enabling seamless integration, testing, and deployment of AI models on multiple hardware platforms, including **Hailo-8** and **Hailo-8L**.  
 
 ---
-https://github.com/Transforms-AI/hailo-peopleCount-guard-kitchenSafety-Garbage.git
+## **Table of Contents**
 
-## **Table of Contents**  
+### Automatic setup
+1. [Setup script - Automatic setup](#setup-script---automatic-setup)
 
+### Manual setup
 1. [Setting up your raspberry pi](#setting-up-your-raspberry-pi)
 2. [Prerequisites](#prerequisites)  
 3. [Installation](#installation)  
-4. [Additional Resources](#additional-resources) 
+4. [Resources download](#download-models-and-demo-video)
+5. [Degirum sources](#additional-resources) 
 
 # Setup script - Automatic setup
 Run this script, this will do the rest. take this setup-script.sh to any raspberry pi you wnat to setup. And then run the bash command
@@ -37,54 +40,15 @@ This script will do these things-
 10. post_reboot checks if everything is okay, if the below error is found Then fixes it automatically.
 ```bash
 [HailoRT] [error] CHECK failed - Driver version (4.18.0) is different from library version (4.20.0)
-[HailoRT] [error] Driver version mismatch, status HAILO_INVALID_DRIVER_VERSION(76)``` 
-
-11. If everything OK. post_processor slef distucts
+[HailoRT] [error] Driver version mismatch, status HAILO_INVALID_DRIVER_VERSION(76)
+```
+11. If everything OK. post_processor slef distructs
 12. Takes another reboot.
 13. Now the system is ready to run models.
   
 
-
-
 If any problem arises you can simply use the manual step.
 
-## Download Models and demo video
-activate the virtual environment the run this to get all the models and test video.
-
-``bash
-bash ./download.sh
-```
-it should download :
-```bash
-# best_person_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\best_person_model\
-#Using: 
-gdown "https://drive.google.com/uc?id=1raBgfsNcvIiHFaUCrQCLEaEJ7BzdpKEn"
-
-# garbage_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\garbage_detection_model\
-#Using: 
-gdown "https://drive.google.com/uc?id=1qESwifvEWmB-apw38TZ-QbSKkP6bBbNf"
-
-# guard_classification_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_classification_model
-#Using: 
-gdown "https://drive.google.com/uc?id=1_evd0XNRnVmaNnNDe-iBOxXAwn0OIyTa"
-
-# guard_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_detection_model\
-#Using: 
-gdown "https://drive.google.com/uc?id=1bTpwsmObIDe4apdanvIJri2ZFgeFs2LQ"
-
-# safety_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\safety_detection_model\
-#using:
-gdown "https://drive.google.com/uc?id=13VA4VwyxK8AZ3SD7_WqGkqw5fvLjzZir"
-```
-
-Download some videos to this hailo-peopleCount-guard-kitchenSafety-Garbage\videos\
-using: 
-```bash
-gdown "https://drive.google.com/uc?id=1BBRVaGU7kY8a_OA60Xg_lj-JDdvLeC_n"
-gdown "https://drive.google.com/uc?id=1wDAboybnEMJHMO8O5z6JOCivTmfTLZS6"
-gdown "https://drive.google.com/uc?id=1LRbN2BUi-MKlmaRaymw3bY_Mwn8iN2sv"
-gdown "https://drive.google.com/uc?id=1PnGnI5TE7qeLVBHmpYEPGnx70cbZ3e97"
-```
 
 ---
 
@@ -220,6 +184,43 @@ This script will:
 
 If the test runs successfully, your environment is properly configured.  
 
+## Download Models and demo video
+activate the virtual environment the run this to get all the models and test video. The git repo will not have any models. If you are using the automatic scipt 
+
+```bash
+bash ./download.sh
+```
+it should download :
+```bash
+# best_person_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\best_person_model\
+#Using: 
+gdown "https://drive.google.com/uc?id=1raBgfsNcvIiHFaUCrQCLEaEJ7BzdpKEn"
+
+# garbage_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\garbage_detection_model\
+#Using: 
+gdown "https://drive.google.com/uc?id=1qESwifvEWmB-apw38TZ-QbSKkP6bBbNf"
+
+# guard_classification_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_classification_model
+#Using: 
+gdown "https://drive.google.com/uc?id=1_evd0XNRnVmaNnNDe-iBOxXAwn0OIyTa"
+
+# guard_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\guard_detection_model\
+#Using: 
+gdown "https://drive.google.com/uc?id=1bTpwsmObIDe4apdanvIJri2ZFgeFs2LQ"
+
+# safety_detection_model.hef to this hailo-peopleCount-guard-kitchenSafety-Garbage\models\safety_detection_model\
+#using:
+gdown "https://drive.google.com/uc?id=13VA4VwyxK8AZ3SD7_WqGkqw5fvLjzZir"
+```
+
+Download some videos to this hailo-peopleCount-guard-kitchenSafety-Garbage\videos\
+using: 
+```bash
+gdown "https://drive.google.com/uc?id=1BBRVaGU7kY8a_OA60Xg_lj-JDdvLeC_n"
+gdown "https://drive.google.com/uc?id=1wDAboybnEMJHMO8O5z6JOCivTmfTLZS6"
+gdown "https://drive.google.com/uc?id=1LRbN2BUi-MKlmaRaymw3bY_Mwn8iN2sv"
+gdown "https://drive.google.com/uc?id=1PnGnI5TE7qeLVBHmpYEPGnx70cbZ3e97"
+```
 ---
 ## Additional Resources
 
