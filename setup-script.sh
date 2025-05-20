@@ -120,12 +120,20 @@ fi
 sudo apt install -y python3-venv python3-full
 check_status
 
-if [ ! -d "$VENV_DIR" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv $VENV_DIR
-    check_status
+if [ -d "$VENV_DIR" ]; then
+    # Check if venv is valid
+    if [ -f "$VENV_DIR/bin/activate" ] && "$VENV_DIR/bin/python" -c "import sys; print(sys.executable)" >/dev/null 2>&1; then
+        echo "Virtual environment already exists and is valid in $VENV_DIR."
+    else
+        echo "Existing virtual environment is invalid or broken. Removing and recreating..."
+        rm -rf "$VENV_DIR"
+        python3 -m venv "$VENV_DIR"
+        check_status
+    fi
 else
-    echo "Virtual environment already exists."
+    echo "Creating virtual environment in $VENV_DIR..."
+    python3 -m venv "$VENV_DIR"
+    check_status
 fi
 
 . $VENV_DIR/bin/activate
