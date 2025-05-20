@@ -1,7 +1,34 @@
 import subprocess
 import degirum as dg
 import sys
+import logging
+import json
+import os
 
+# Dynamically get the user's home directory
+HOME_DIR = os.path.expanduser("~")
+LOG_PATH = os.path.join(HOME_DIR, "system-status.log")
+JSON_PATH = os.path.join(HOME_DIR, "system-status.json")
+
+# Configure logging
+logging.basicConfig(
+    filename=LOG_PATH,
+    filemode='a',  # Append mode
+    format='%(asctime)s %(levelname)s: %(message)s',
+    level=logging.INFO
+)
+
+def log_status(status):
+    logging.info(f"STATUS: {status}")
+    write_status_json(status)
+
+def write_status_json(status, json_path=JSON_PATH):
+    data = {"STATUS": status}
+    try:
+        with open(json_path, 'w') as f:
+            json.dump(data, f)
+    except Exception as e:
+        logging.error(f"Failed to write status JSON: {e}")
 
 def get_sys_info():
     try:
@@ -9,56 +36,56 @@ def get_sys_info():
         result = subprocess.run(
             ["degirum", "sys-info"], capture_output=True, text=True, check=True
         )
-        print(result.stdout)  # Print the command output
+        logging.info(result.stdout)  # Log the command output
     except subprocess.CalledProcessError as e:
-        print("Error executing 'degirum sys-info':", e.stderr)
+        logging.error(f"Error executing 'degirum sys-info': {e.stderr}")
+        log_status("FAILED")
+        write_status_json("FAILED")
+        sys.exit(1)
     except FileNotFoundError:
-        print(
-            "Error: 'degirum' command not found. Make sure DeGirum PySDK is installed."
-        )
+        logging.error("Error: 'degirum' command not found. Make sure DeGirum PySDK is installed.")
+        log_status("FAILED")
+        write_status_json("FAILED")
+        sys.exit(1)
     except Exception as e:
-        print(f"Unexpected error while getting system info: {e}")
-
+        logging.error(f"Unexpected error while getting system info: {e}")
+        log_status("FAILED")
+        write_status_json("FAILED")
+        sys.exit(1)
 
 if __name__ == "__main__":
     try:
-        print("System information:")
+        logging.info("System information:")
         get_sys_info()
 
-        # Check supported devices
         try:
-            supported_devices = dg.get_supported_devices(
-                inference_host_address="@local"
-            )
+            supported_devices = dg.get_supported_devices(inference_host_address="@local")
         except Exception as e:
-            print(f"Error fetching supported devices: {e}")
+            logging.error(f"Error fetching supported devices: {e}")
+            log_status("FAILED")
+            write_status_json("FAILED")
             sys.exit(1)
 
-        print("Supported RUNTIME/DEVICE combinations:", list(supported_devices))
+        logging.info(f"Supported RUNTIME/DEVICE combinations: {list(supported_devices)}")
 
-        # Determine appropriate device_type
         if "HAILORT/HAILO8L" in supported_devices:
             device_type = "HAILORT/HAILO8L"
         elif "HAILORT/HAILO8" in supported_devices:
             device_type = "HAILORT/HAILO8"
         else:
-            print(
-                "Hailo device is NOT supported or NOT recognized properly. Please check the installation."
-            )
+            logging.error("Hailo device is NOT supported or NOT recognized properly. Please check the installation.")
+            log_status("FAILED")
+            write_status_json("FAILED")
             sys.exit(1)
 
-        print(f"Using device type: {device_type}")
-
-        print("Running inference on Hailo device")
+        logging.info(f"Using device type: {device_type}")
+        logging.info("Running inference on Hailo device")
 
         inference_host_address = "@local"
         zoo_url = "./models/guard_detection_model"
-        # token = ""
-
-        # Set model name and image source
         model_name = "guard_detection_model"
         image_source = "input/guard_1.png"
-        # Load AI model
+
         try:
             model = dg.load_model(
                 model_name=model_name,
@@ -67,23 +94,32 @@ if __name__ == "__main__":
                 device_type=device_type,
             )
         except Exception as e:
-            print(f"Error loading model '{model_name}': {e}")
+            logging.error(f"Error loading model '{model_name}': {e}")
+            log_status("FAILED")
+            write_status_json("FAILED")
             sys.exit(1)
 
-        # Perform AI model inference
-        print(
-            f"Running inference using '{model_name}' on image source '{image_source}'"
-        )
+        logging.info(f"Running inference using '{model_name}' on image source '{image_source}'")
         try:
             inference_result = model(image_source)
-            print(inference_result)
+            logging.info(f"Inference result: {inference_result}")
         except Exception as e:
-            print(f"Error during inference: {e}")
+            logging.error(f"Error during inference: {e}")
+            log_status("FAILED")
+            write_status_json("FAILED")
             sys.exit(1)
 
+        # If reached here, inference was successful
+        log_status("SYSTEM_READY")
+        write_status_json("SYSTEM_READY")
+
     except KeyboardInterrupt:
-        print("\nProcess interrupted by user.")
+        logging.warning("Process interrupted by user.")
+        log_status("FAILED")
+        write_status_json("FAILED")
         sys.exit(1)
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        logging.error(f"Unexpected error: {e}")
+        log_status("FAILED")    
+        write_status_json("FAILED")
         sys.exit(1)
