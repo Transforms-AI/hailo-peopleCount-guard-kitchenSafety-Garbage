@@ -19,8 +19,10 @@ from GeneralSystem import GeneralSystem
 class CountSystem(GeneralSystem):
     def __init__(self, config_path):
         super().__init__(config_path)
+        self.sn = self.config["sn"]
         self.debug = self.config["debug"]
-        self.head_count = HeadCount("./config/config_head_count.json", debug = self.debug)
+        self.datasend_interval = self.config["datasend_interval"]
+        self.head_count = HeadCount("./config/config_head_count.json", debug = self.debug, datasend_interval = self.datasend_interval, sn = self.sn)
         self.circular_buffer = CircularBuffer(amount_of_seconds=10)
 
     def load_model_local(self):
@@ -64,17 +66,17 @@ class CountSystem(GeneralSystem):
             one_pred = [ garbage_box[0], garbage_box[1], garbage_box[2], garbage_box[3], item['score'], item['category_id'] ]
             preds.append(one_pred)
 
-        original_frame, total_in, total_out = self.head_count.process_frames(frame, preds)
+        original_frame = self.head_count.process_frames(frame, preds)
         
         processing_time = time.time() - processing_started_time
         
         # cv2.putText(frame, f"Frame No: {frameNo}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         drawText(self.debug, original_frame, f"Frame No: {frameNo}", 10, 30, color=(0, 255, 0), fontScale=0.7, thickness=2)
         
-        self.circular_buffer.add(total_in, total_out)
-        total_in, total_out = self.circular_buffer.sum()
+        # self.circular_buffer.add(total_in, total_out)
+        # total_in, total_out = self.circular_buffer.sum()
         
-        print(f"Frame No: {frameNo} - Total In: {total_in} - Total Out: {total_out} - Processing Time: {processing_time*1000:.2f} ms")
+        # print(f"Frame No: {frameNo} - Total In: {total_in} - Total Out: {total_out} - Processing Time: {processing_time*1000:.2f} ms")
         
         self.last_annotated_frame = original_frame
         return frame, processing_time*1000
@@ -156,7 +158,7 @@ class HeadCount:
     Class for performing head counting using object detection and tracking.
     """
 
-    def __init__(self, config_file='"./config/config_head_count.json"', debug=True):
+    def __init__(self, config_file='"./config/config_head_count.json"', debug=True, datasend_interval=10, sn="HEADCOUNT1"):
         """
         Initializes the HeadCount object.
 
@@ -219,6 +221,8 @@ class HeadCount:
         
         # Debugging 
         self.debug = self.config.get('debug', True)
+        self.datasend_interval = datasend_interval
+        self.sn = sn
         self.color_default_line = (0, 255, 255) # Yellow for default lines (BGR)
         self.color_in = (0, 0, 255)             # Red for IN events (BGR)
         self.color_out = (255, 0, 0)            # Blue for OUT events (BGR)
@@ -628,13 +632,13 @@ class HeadCount:
         return original_frame
 
     def process_data(self):
-        if time.time() - self.start_time > self.config['data_send_interval']:
+        if time.time() - self.start_time > self.datasend_interval:
             total_in = self.enter_count - self.inSend
             total_out = self.exit_count - self.outSend
             end_time = time.time()
                 
-            self.people_count_data.add({
-                    "sn": self.config["sn"],
+            self.people_count_data.append({
+                    "sn": self.sn,
                     "total_in": total_in,
                     "total_out": total_out,
                     "total": total_in + total_out,

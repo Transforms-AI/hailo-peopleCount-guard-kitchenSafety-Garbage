@@ -14,18 +14,15 @@ from collections import Counter
 
 class GuardSystem(GeneralSystem):
 
-    # Declaring global variable for holding each frame's guard count
-    # This will be used by the judgment system to send the data to the server according to judgment interval
-    detection_buffer = []
-    inferred_frame_count_for_judgement = 0 # This will check how many frames have been processed so far and if it is exceeding judgment_nth_frame
-    last_judgement_time = 0 # This will be used to check if the judgement interval has passed or not
-    last_datasend_time = 0 # This will be used to check if the datasend interval has passed or not
-
     def __init__(self, config_path):
         super().__init__(config_path)
         self.timeline_data = [] # This will hold the data to be sent to the server
         self.timeline_image = []
         self.debug = self.config["debug"]
+        self.detection_buffer = []
+        self.inferred_frame_count_for_judgement = 0 # This will check how many frames have been processed so far and if it is exceeding judgment_nth_frame
+        self.last_judgement_time = 0 # This will be used to check if the judgement interval has passed or not
+        self.last_datasend_time = 0 # This will be used to check if the datasend interval has passed or not  
         
     
     def softmax(self, scores):
@@ -208,15 +205,15 @@ class GuardSystem(GeneralSystem):
         judge_every_nth_frame = max(1, self.config['judge_every_nth_frame'])
         
         # --- Judgement System Logic ---
-        if GuardSystem.inferred_frame_count_for_judgement % judge_every_nth_frame == 0:
-            GuardSystem.detection_buffer.append({
+        if self.inferred_frame_count_for_judgement % judge_every_nth_frame == 0:
+            self.detection_buffer.append({
                 "frame": frame_to_display_or_stream.copy(),
                 "guard_count": self.guard_count_this_frame, # Store the count of confirmed guards
                 "timestamp": current_time,
             })
 
-        if len(GuardSystem.detection_buffer) >= frames_to_decide or current_time - GuardSystem.last_judgement_time >= judgement_interval:
-            judgement_batch = GuardSystem.detection_buffer[-frames_to_decide:]
+        if len(self.detection_buffer) >= frames_to_decide or current_time - self.last_judgement_time >= judgement_interval:
+            judgement_batch = self.detection_buffer[-frames_to_decide:]
             guard_counts_in_batch = [item["guard_count"] for item in judgement_batch]
 
             if guard_counts_in_batch:
@@ -256,9 +253,9 @@ class GuardSystem(GeneralSystem):
 
                 self.timeline_image.append( {"image": mat_to_response(frame_data_for_timeline) } )
 
-                GuardSystem.detection_buffer = []
-                GuardSystem.last_judgement_time = current_time
-                GuardSystem.inferred_frame_count_for_judgement = 0
+                self.detection_buffer = []
+                self.last_judgement_time = current_time
+                self.inferred_frame_count_for_judgement = 0
 
         return None
 
@@ -299,7 +296,7 @@ class GuardSystem(GeneralSystem):
 
 
         # Incrementing the inferred frame count for judgement
-        GuardSystem.inferred_frame_count_for_judgement += 1
+        self.inferred_frame_count_for_judgement += 1
 
         # Applying the judgement system
         # Judgment system handles the logic of sending data to the server according to the judgement interval
