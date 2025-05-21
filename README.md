@@ -9,6 +9,7 @@ This repository provides a comprehensive guide on using **DeGirum PySDK**, **DeG
 ### Automatic setup
 1. [Setup script - Automatic setup](#setup-script---automatic-setup)
 2. [Change config file](#change-config-file)
+3. [Run Model](#run_model)
 
 ### Manual setup
 1. [Setting up your raspberry pi](#setting-up-your-raspberry-pi)
@@ -52,7 +53,7 @@ This script will do these things-
 If any problem arises you can simply use the manual step.
 
 ## Change config file
-To check the output stream on the website, you have to config the local ip and sn
+To check the output stream on the website, you have to config the local ip and sn. You shall find all the config in config dir.
 from 
 ```bash
 cd hailo-peopleCount-guard-kitchenSafety-Garbage/config/config_guard_detection.json
@@ -60,13 +61,15 @@ cd hailo-peopleCount-guard-kitchenSafety-Garbage/config/config_guard_detection.j
 Change this lines accordingly
 ```bash
 "sn" : "HEADCOUNT1"
-# and
+# and to your device ip
 "local_ip": "192.168.8.101"
 ```
 
-
-
-
+## Run Model
+After changing the config you have to activate the venv and run the model using 
+```bash
+bash ./run_detection.sh
+```
 ---
 
 # **Manual Setup**
