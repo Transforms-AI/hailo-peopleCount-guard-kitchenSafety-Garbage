@@ -53,14 +53,14 @@ class CountSystem(GeneralSystem):
             ]
         }
         
-        inference_result_person = dummy_data #self.person_model(frame)
+        inference_result_person = self.person_model(frame)
         time.sleep(0.05) # Simulate processing time
         
         inference_time = time.time() - processing_started_time
         
         preds = []
         # processing predictions preds -> List< [x1, y1, x2, y2, confidence, class_id] >
-        for item in inference_result_person["results"]:
+        for item in inference_result_person.results:
             garbage_box = item['bbox']
             # item: {'bbox': [xmin, ymin, xman, ymax], 'category_id': 0, 'label': 'person', 'score': 0.7400065064430237}
             one_pred = [ garbage_box[0], garbage_box[1], garbage_box[2], garbage_box[3], item['score'], item['category_id'] ]
@@ -516,15 +516,18 @@ class HeadCount:
             # Check if the track ID exists in the previous midpoint dictionary
             if track_id in self.previous_midpoint_dict:
                 previous_midpoint = self.previous_midpoint_dict[track_id]
-                distance = self.get_point_distance(
-                    current_midpoint, previous_midpoint)
+                distance = self.get_point_distance(current_midpoint, previous_midpoint)
 
+                #if_logic = distance < self.min_movement_distance                
+                #print(f"If_logic: {if_logic}, Distance: {distance}, Min Movement Distance: {self.min_movement_distance}") # Debugging output
                 # Skip if the distance moved is too small 
                 if distance < self.min_movement_distance:
                     continue
 
                 min_distance_not_meet = False
                 enter_or_exit_found = False # Renamed for clarity
+
+                #print(f"len of: {preds}")
 
                 # Check for intersection with each entrance line
                 for entrance_line in self.entrance_lines:
@@ -535,6 +538,7 @@ class HeadCount:
                         enter_or_exit_found = True
                         dir_movement = self.direction_of_movement(previous_midpoint, current_midpoint,
                                                                   entrance_line[0] + entrance_line[1])
+                        #print(f"Direction of movement: {dir_movement}") # Debugging output
                         
                         # Only for debugging
                         start_point = (int(previous_midpoint[0]), int(previous_midpoint[1]))

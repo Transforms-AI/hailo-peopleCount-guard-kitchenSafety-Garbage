@@ -169,7 +169,7 @@ class GeneralSystem:
                     print(f"Frame no: {frame_count} at {self.strId} avg fps: {fps:.2f} and memory: {memory:.2f}%")
                     summary += f"Frame no: {frame_count} processed in {processing_time:.2f} ms with avg fps {fps:.2f} and memory: {memory}%\n"
 
-                if(frame_count >= 600):
+                if(frame_count >= 6000):
                     summary += f"Total {frame_count} frames processed.\n\n"
                     summary += f" Total time taken {total_time:.2f} ms.\n"
                     summary += f" Average FPS: {fps:.2f}\n"
@@ -189,14 +189,19 @@ class GeneralSystem:
                     end_time = time_to_string(current_time)
                     data_send_start_time = time.time()
                     
-                    # Prepare data for sending
+                    # generating data
                     data, files = self.generate_data(start_time, end_time)
 
-                    # New logic needed for sending data and generate data shall be returning a list. the list will hold the file.
-                    
+                    # Prepare data for sending
+                    for i in range(len(data)):
+                        if files is None:
+                            self.data_uploader.send_data(data[i])
+                            print(f"Data sent: {frame_count} took: {(time.time() - data_send_start_time)*1000:.2f} ms. \n data: {data[i]}")
+                        else:
+                            self.data_uploader.send_data(data[i], files=files[i]) 
+                            print(f"Data sent: {frame_count} took: {(time.time() - data_send_start_time)*1000:.2f} ms. \n data: {data[i]}")                                    
 
-                    self.data_uploader.send_data(data, files=files)
-                    print(f"Data sent: {frame_count} took: {(time.time() - data_send_start_time)*1000:.2f} ms. \n data: {data}")
+                    
                     last_datasend_time = time.time()
                 
                 if self.show:
