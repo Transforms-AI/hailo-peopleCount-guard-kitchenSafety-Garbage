@@ -222,6 +222,7 @@ class GeneralSystem:
             print(f"CPU usage: {cpu_usage:.2f}%")
         except Exception as e:
             print(f"Error during inference: {e} {self.strId}")
+            # log to std-err for run_model_status_check.json
             traceback.print_exc()
             sys.exit(1)
     def generate_data(self, start_time, end_time):

@@ -1,0 +1,33 @@
+# To run the setup script in the, first copy to $HOME directory, download the code in zip and version check mechanism and code ofbsecation
+scp setup-script.sh rpi1006:/home/admin/
+
+# Then run it using 
+ssh rpi1007 'nohup bash ~/setup-script.sh > ~/setup-script.log 2>&1 &'
+
+# After the setup script running is complete, then we can check the status from "system-status.json"
+# Run the status_check.py , this will check the system status, # add rpi's name with system-staus.json.
+
+python status_check.py 
+
+# To get the ip of the device in a text file. for some reason it gives output to std error. without 2>&1 it doesn't work.
+ssh rpi1006 "ifconfig eth0 | grep 'inet ' | cut -d' ' -f10" > rpi1006_ip.txt 2>&1
+
+# Read mac address of the raspberry Pi.
+
+# Now we need to update the Config file. and send it. Sn input, rtsp link input.
+# Need python script
+
+# Sending config file to specific location, it will replace it.
+scp config_gurad_detection.json rpi1006:/home/admin/hajj_system/hailo-peopleCount-guard-kitchenSafety-Garbage/config/
+
+# python scrpit to update the config file accordingly.
+
+# Running model's from our end
+ssh rpi1006 'cd /home/admin/hajj_system/hailo-peopleCount-guard-kitchenSafety-Garbage/ && source degirum_env/bin/activate && nohup python app_detection_main.py config/config_guard_detection.json > rpi1006_guard_model_run_status.txt 2>&1 &' 
+
+# run-model-status Text file read every 5 sec.
+
+
+
+
+

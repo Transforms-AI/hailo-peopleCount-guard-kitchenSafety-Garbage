@@ -41,13 +41,14 @@ class DataUploader:
         while retries < self.max_retries and time.time() - start_time < self.timeout:
             try:
                 url = self.hearbeat_url if heartbeat else self.api_url
-                if files:
-                    # If files are provided, send data as form-data
-                    response = requests.post(url, headers=self.headers, data=data, files=files)
-                else:
-                    # Otherwise, send data as JSON
-                    response = requests.post(url, headers=self.headers, json=data)
+                # if files:
+                #     # If files are provided, send data as form-data
+                #     response = requests.post(url, headers=self.headers, data=data, files=files)
+                # else:
+                #     # Otherwise, send data as JSON
+                #     response = requests.post(url, headers=self.headers, json=data)
 
+                response = requests.post(url, headers=self.headers, data=data, files=files)
                 response.raise_for_status()
 
                 with self.lock:

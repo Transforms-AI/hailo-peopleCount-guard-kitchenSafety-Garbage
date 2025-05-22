@@ -251,7 +251,8 @@ class GuardSystem(GeneralSystem):
                 if self.debug:
                     print (f"Timeline data: {self.timeline_data}")
 
-                self.timeline_image.append( {"image": mat_to_response(frame_data_for_timeline) } )
+                # TO DO > Potential Memory leak.
+                self.timeline_image.append( {"image": mat_to_response(frame_data_for_timeline) })
 
                 self.detection_buffer = []
                 self.last_judgement_time = current_time
@@ -269,13 +270,6 @@ class GuardSystem(GeneralSystem):
 
         # Set Datasend Interval - 1 min        
         current_time = time.time()
-
-        # NEED TO UPDATE HERE --> currently thinking of sending it timeline_data to generate_data
-        # if use_judgement and (current_time - self.last_datasend_time >= self.datasend_interval):
-        #     if send_timeline_data(timeline_data, config, uploader):
-        #         timeline_data = []
-        #         last_datasend_time = current_time
-
 
         # Run the guard detection and classification
         filtered_boxes, filtered_scores, filtered_classes, frame = self.run_detection_and_classification(frame)
@@ -324,5 +318,10 @@ class GuardSystem(GeneralSystem):
             ...
         ]
         """
+        timeline_data_to_sent = self.timeline_data
+        timeline_image_to_sent = self.timeline_image
 
-        return self.timeline_data, self.timeline_image
+        self.timeline_data = []
+        self.timeline_image = []
+
+        return timeline_data_to_sent, timeline_image_to_sent

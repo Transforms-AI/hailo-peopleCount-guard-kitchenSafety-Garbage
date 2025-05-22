@@ -30,7 +30,7 @@ class CountSystem(GeneralSystem):
         zoo_url = self.config["zoo_url"]
 
         try:
-            self.person_model = dg.load_model( model_name = model_name, inference_host_address = "@local", zoo_url = zoo_url )
+            self.person_model = dg.load_model(model_name = model_name, inference_host_address = "@local", zoo_url = zoo_url )
         except Exception as e:
             print(f"Error at loading models: {e} {self.strId}. Exiting program...")
             sys.exit(1)
@@ -44,14 +44,14 @@ class CountSystem(GeneralSystem):
         processing_started_time = time.time()
         frame = frame.copy()
 
-        dummy_data = {
-            "results":[
-                {'bbox': [142, 209, 312, 583], 'category_id': 0, 'label': 'person', 'score': 0.7400065064430237},
-                {'bbox': [438, 187, 605, 602], 'category_id': 0, 'label': 'person', 'score': 0.8923571109771729},
-                {'bbox': [723, 197, 862, 569], 'category_id': 0, 'label': 'person', 'score': 0.9155387282371521},
-                {'bbox': [28, 234, 138, 546], 'category_id': 0, 'label': 'person', 'score': 0.6783902645111084},
-            ]
-        }
+        # dummy_data = {
+        #     "results":[
+        #         {'bbox': [142, 209, 312, 583], 'category_id': 0, 'label': 'person', 'score': 0.7400065064430237},
+        #         {'bbox': [438, 187, 605, 602], 'category_id': 0, 'label': 'person', 'score': 0.8923571109771729},
+        #         {'bbox': [723, 197, 862, 569], 'category_id': 0, 'label': 'person', 'score': 0.9155387282371521},
+        #         {'bbox': [28, 234, 138, 546], 'category_id': 0, 'label': 'person', 'score': 0.6783902645111084},
+        #     ]
+        # }
         
         inference_result_person = self.person_model(frame)
         time.sleep(0.05) # Simulate processing time
@@ -61,9 +61,9 @@ class CountSystem(GeneralSystem):
         preds = []
         # processing predictions preds -> List< [x1, y1, x2, y2, confidence, class_id] >
         for item in inference_result_person.results:
-            garbage_box = item['bbox']
+            person_box = item['bbox']
             # item: {'bbox': [xmin, ymin, xman, ymax], 'category_id': 0, 'label': 'person', 'score': 0.7400065064430237}
-            one_pred = [ garbage_box[0], garbage_box[1], garbage_box[2], garbage_box[3], item['score'], item['category_id'] ]
+            one_pred = [ person_box[0], person_box[1], person_box[2], person_box[3], item['score'], item['category_id'] ]
             preds.append(one_pred)
 
         original_frame = self.head_count.process_frames(frame, preds)
@@ -83,8 +83,6 @@ class CountSystem(GeneralSystem):
 
     def generate_data(self, start_time, end_time):
         # total_in, total_out = self.circular_buffer.sum()
-
-
         # data = {
         #     "sn": self.sn,
         #     "total_in": total_in,
@@ -92,11 +90,14 @@ class CountSystem(GeneralSystem):
         #     "total": (total_in + total_out),
         #     "start_time": start_time,
         #     "end_time": end_time
-        # }
-        
+        # }        
         # # Prepare files for sending
         # files = {"image": mat_to_response(self.last_annotated_frame) }
-        return self.head_count.people_count_data, None
+
+        if self.head_count.people_count_data is None:
+            return [], None
+        else:
+            return [self.head_count.people_count_data[-1]], None 
     
     def on_data_received(self, config_file): # overridden method
         self.head_count.update_settings(config_file)
@@ -249,6 +250,7 @@ class HeadCount:
         self.min_movement_distance = 60
         self.line_cross_threshold = 30
         self.people_count_data = []
+        
         
     def define_entrance_lines(self):
         """
@@ -640,6 +642,9 @@ class HeadCount:
             total_in = self.enter_count - self.inSend
             total_out = self.exit_count - self.outSend
             end_time = time.time()
+
+            self.inSend = self.enter_count
+            self.outSend = self.exit_count
                 
             self.people_count_data.append({
                     "sn": self.sn,
@@ -647,5 +652,5 @@ class HeadCount:
                     "total_out": total_out,
                     "total": total_in + total_out,
                     "start_time": time_to_string(self.start_time),
-                    "end_time": time_to_string(end_time),
-            })
+                    "end_time": time_to_string(end_time)
+            }) # Potential memory leak, need to check. TO DO.
