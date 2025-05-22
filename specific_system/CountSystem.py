@@ -643,8 +643,8 @@ class HeadCount:
             total_out = self.exit_count - self.outSend
             end_time = time.time()
 
-            self.inSend = self.enter_count
-            self.outSend = self.exit_count
+            # self.inSend = self.enter_count
+            # self.outSend = self.exit_count
                 
             self.people_count_data.append({
                     "sn": self.sn,
