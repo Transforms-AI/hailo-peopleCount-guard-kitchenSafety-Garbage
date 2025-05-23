@@ -91,7 +91,14 @@ cd "$PROJECT_DIR"
 if [ -d "$REPO_DIR" ]; then
     echo "Repository already exists. Pulling latest changes..."
     cd "$REPO_DIR"
-    git pull
+    if git pull; then
+        echo "Git pull succeeded."
+    else
+        echo "Git pull failed. Attempting to recover with fetch and reset..."
+        git fetch --all
+        git reset --hard origin/main
+        check_status
+    fi
     echo "=====> Current repo directory (pulled): $(pwd)"
     check_status
 else
