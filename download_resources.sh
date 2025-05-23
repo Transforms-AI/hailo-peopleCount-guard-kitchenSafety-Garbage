@@ -15,7 +15,7 @@ declare -A MODEL_FILES=(
 )
 
 declare -A VIDEO_FILES=(
-    ["$VIDEOS_DIR/people-count-test.mp4"]="1B9noXpqa9r3suQSnAwjz3he6xzYx79Tp"
+    ["$VIDEOS_DIR/people-count-test-trimmed.mp4"]="1B9noXpqa9r3suQSnAwjz3he6xzYx79Tp"
     ["$VIDEOS_DIR/guard_demo.mp4"]="1wDAboybnEMJHMO8O5z6JOCivTmfTLZS6"
     ["$VIDEOS_DIR/kitchen-test-final.mp4"]="1LRbN2BUi-MKlmaRaymw3bY_Mwn8iN2sv"
     ["$VIDEOS_DIR/garbage.mp4"]="1PnGnI5TE7qeLVBHmpYEPGnx70cbZ3e97"

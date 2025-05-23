@@ -1,3 +1,35 @@
+I want to make a python script that will read from the the ssh config file.
+Host rpi1001  
+    HostName 161.97.126.xxx   
+    User admin@macadress  
+    Port 2202
+    IdentityFile "C:\Users\SHEIKH GALIB\.ssh\id_rsa_vps"
+
+Host rpi1002   
+    HostName 161.97.126.xxx   
+    User admin@adress   
+    Port 2202
+    IdentityFile "C:\Users\SHEIKH GALIB\.ssh\id_rsa_vps"
+
+So, I need a python script to check the ssh conig file and show the list of all the devices on command line
+and ask user for which device they want to choose.
+Then, 
+i have a setup-script.sh that i use to send to this raspberry pi and setup it. 
+Then i check the setup-status.json using this command. 
+ scp setup-script.sh rpi1006:/home/admin/
+
+# Then run it using 
+ssh rpi1006 'nohup bash ~/setup-script.sh > ~/setup-script.log 2>&1 &'
+
+# Run the status_check.py , this will check the system status, # add rpi's name with system-staus.json.
+
+python status_check.py
+
+
+
+
+
+
 # To run the setup script in the, first copy to $HOME directory, download the code in zip and version check mechanism and code ofbsecation
 scp setup-script.sh rpi1006:/home/admin/
 
@@ -10,22 +42,144 @@ ssh rpi1007 'nohup bash ~/setup-script.sh > ~/setup-script.log 2>&1 &'
 python status_check.py 
 
 # To get the ip of the device in a text file. for some reason it gives output to std error. without 2>&1 it doesn't work.
-ssh rpi1006 "ifconfig eth0 | grep 'inet ' | cut -d' ' -f10" > rpi1006_ip.txt 2>&1
+ssh rpi1006 "ifconfig eth0 | grep 'inet ' | cut -d' ' -f10" > rpi1006_ip_mac.txt 2>&1
+# Need bash command to Read mac address of the raspberry Pi.
+and also add it to the rpi1006_ip_mac.txt. 
+#Read the ip_mac from the file. and edit a config file and upate the "local_ip" in the config file. config file structure below. 
+config_guard_detection.json
+{
+    "sn" : "guard1",
+    "inference_interval" : 0.05,
+    "heartbeat_interval" : 10,
+    "datasend_interval" : 62, 
+    "judgement_interval": 60,
+    "judge_every_nth_frame": 24,
+    "frames_to_decide": 15,
+    "always_send_frames": false,
+    "live" : true,
+    "show" : false,
+    "livestream": true,
+    "iou_threshold": 0.01, 
+    "video_source_rename_later" : "rtsp://admin:j40a@234@192.168.8.201:554/Streaming/Channels/101",
+    "video_source" : "videos/guard_demo.mp4",
+    "data_send_url" : "https://hajjdrf.aihajjservices.com/camera/create-guard-detect/",
+    "heartbeat_url": "https://hajjdrf.aihajjservices.com/camera/create-camera-heartbeat/",
+    "X-Secret-Key" : "e5oNH8Yhx8eJml4bSxYw",
+    "local_ip": "192.168.0.147",
+    "port": 1883,
+    "name": "guard_detection",
+    "model_name": "guard_detection_model",
+    "zoo_url": "./models/guard_detection_model",
 
-# Read mac address of the raspberry Pi.
+    "model_name_classification": "guard_classification_model",
+    "zoo_url_classification": "./models/guard_classification_model",
+    "type": "GUARD",
+    "debug": true
+}
 
-# Now we need to update the Config file. and send it. Sn input, rtsp link input.
-# Need python script
-
+# Now we need a option to update the "Sn" and the "video_source". the input's taking from command line from user and send it.
 # Sending config file to specific location, it will replace it.
 scp config_gurad_detection.json rpi1006:/home/admin/hajj_system/hailo-peopleCount-guard-kitchenSafety-Garbage/config/
 
-# python scrpit to update the config file accordingly.
 
 # Running model's from our end
 ssh rpi1006 'cd /home/admin/hajj_system/hailo-peopleCount-guard-kitchenSafety-Garbage/ && source degirum_env/bin/activate && nohup python app_detection_main.py config/config_guard_detection.json > rpi1006_guard_model_run_status.txt 2>&1 &' 
 
 # run-model-status Text file read every 5 sec.
+
+
+
+
+
+Now that we can successfully parse the ssh config, then when user chooses a device. 
+we will do this things:
+Reading config Files...
+1. rpi1001
+2. rpi1002
+3. rpi1003
+...
+Select a host by number (1-18):1
+You have selected rpi1001
+if there is no path to id_rsa_vps give a warning that "ssh will require passwords. Add a id_rsa_vps file in the ssh {dir} .And tell the user to give password in advance so that we can use it when we call the update or ip_mac_read or any other functions.
+
+then,
+1. Run setup-script 
+2. Check setup status
+3. Run Model
+==>3.1 Gurad Detection
+==>3.2 People Counting
+==>3.3 Kitchen Safety
+==>3.4 Garbage Detection
+4. Check running model status
+==>4.1 Gurad Detection
+==>4.2 People Counting
+==>4.3 Kitchen Safety
+==>4.4 Garbage Detection
+
+What to do in option 1. Run setup-script
+Using this command we will send the setup script from our end to the raspberry pi, 
+scp setup-script.sh rpi1001:/home/admin/
+
+here the 'rpi1001' will be the host choocen.
+Add 3 retry every 2 sec if unsuccessful in sending, as internet connection might be unstable
+Then we will run the setup script on the raspberry pi on backgorund and log every stdout and std error.
+Using,
+ssh rpi1001 'nohup bash ~/setup-script.sh > ~/setup_script.log 2>&1 &'
+If not successfull retry 3 times each with 2 sec interval. 
+We should read the setup-script.log on the raspberry pi every 2 sec, on our end. but on our end the file name should be 
+setup_script_{host}.log, and also with retry if not successfull. 
+The setup script will take two reboots. and after that it will generate a file system-status.json on {host}:/home/admin/system-status.json
+We will read it. and if everything is okay the system-status.json will have
+{"STATUS": "SYSTEM_READY"}
+Then we will show text to the user that the system is ready.
+Ask the user, if he wants to go back and run the model. 
+if go back then come to the 
+1. Run setup-script
+2. Check setup status
+3. Run Model
+4. Check running model status
+
+
+Option 2. Check setup status: This is as like Reading system-status.json. "The setup script will take two reboots. and after that it will generate a file system-status.json on {host}:/home/admin/system-status.json
+We will read it. and if everything is okay the system-status.json will have
+{"STATUS": "SYSTEM_READY"}" same.
+
+option 3. Run Model.
+when this is selected.
+show these options,
+
+1. Gurad Detection
+2. People Counting
+3. Kitchen Safety
+4. Garbage Detection
+
+when any option is selected among them, 
+we will prompt user for config update. 
+we will use the ip_mac_read (with retry one) and update config codes here.
+if 1. Gurad Detection is selected the default config file would be: config_guard_detection.json
+if 2. People Counting is selected the default config file would be: config_people_count.json
+if 3. Kitchen Safety is selected the default config file would be: config_safety.json
+if 4. Garbage Detection is selected the default config file would be: config_garbage.json
+
+After we have successfully updated the config file. we will run the model
+Using,
+ssh rpi1001 'cd /home/admin/hajj_system/hailo-peopleCount-guard-kitchenSafety-Garbage/ && source degirum_env/bin/activate && nohup python app_detection_main.py config/config_guard_detection.json > rpi1001_guard_model_run_status.log 2>&1 &'
+
+here the config/{users_chocie_of_model}.json and for the log {host}_{model_name}_run_status.log 
+We should check the log on raspberry pi every 5 sec to check id there is any 'Error' or the inferencing stopped. 
+(implement it in a way that when we add UI to this program, we can use. this log reading feature. For now just implete this in running model status)
+
+option 4. Check running model status
+1. Gurad Detection
+2. People Counting
+3. Kitchen Safety
+4. Garbage Detection upon the choice of the user.
+read this every 2 sec and show it in out end. (with retry)
+{host}_{model_name}_run_status.log 
+
+
+
+
 
 
 
