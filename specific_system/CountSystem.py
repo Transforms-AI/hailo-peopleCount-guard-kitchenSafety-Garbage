@@ -82,23 +82,13 @@ class CountSystem(GeneralSystem):
         return frame, processing_time*1000
 
     def generate_data(self, start_time, end_time):
-        # total_in, total_out = self.circular_buffer.sum()
-        # data = {
-        #     "sn": self.sn,
-        #     "total_in": total_in,
-        #     "total_out": total_out,
-        #     "total": (total_in + total_out),
-        #     "start_time": start_time,
-        #     "end_time": end_time
-        # }        
-        # # Prepare files for sending
-        # files = {"image": mat_to_response(self.last_annotated_frame) }
-
         if self.head_count.people_count_data is None:
             return [], None
         else:
-            return [self.head_count.people_count_data[-1]], None 
-    
+            data = self.head_count.people_count_data
+            self.head_count.people_count_data = [] # Clearing the data object
+            return data, None
+
     def on_data_received(self, config_file): # overridden method
         self.head_count.update_settings(config_file)
 
@@ -312,15 +302,6 @@ class HeadCount:
         # Update entrance lines (ensure defaults prevent errors)
         self.entrance_lines = self.define_entrance_lines() # This uses the updated config values
 
-        # Update output and window display flags
-        # *** This is the specific line causing the KeyError ***
-        # self.save_output = self.config.get('save_output', False) # Use .get() with a default (e.g., False)
-        # self.show_window = self.config.get('show_window', False) # Use .get() with a default
-        # self.live = self.config.get('live', False) # Also update live flag based on new config
-        # self.send_data = self.config.get('send_data', False) # Update send_data flag
-
-        # Re-evaluate streaming setup based on the new 'live' flag
-        # self.setup_stream()
         print("Settings updated successfully.") # Confirmation message
 
     def load_config(self):
@@ -594,15 +575,9 @@ class HeadCount:
                     self.debug_lines = []
 
         self.process_data()
-        # total_in = self.enter_count - self.inSend
-        # total_out = self.exit_count - self.outSend
-        
-        # self.inSend += total_in
-        # self.outSend += total_out
         
         # Draw entrance lines
         for line in self.entrance_lines:
-            # cv2.line(original_frame, (line[0][0], line[0][1]), (line[1][0], line[1][1]), (255, 255, 0), 2)
             drawLine(self.debug, original_frame, (line[0][0], line[0][1]), (line[1][0], line[1][1]), color=(255,255,0), thickness=2)
 
         text = f"In: +{self.display_enter_count} Out: +{self.display_exit_count}" # Use display counts with '+'
@@ -621,14 +596,11 @@ class HeadCount:
         box_y = 10 # Y position from top edge
 
         # Create a black rectangle as the background
-        # cv2.rectangle(original_frame, (box_x, box_y), (box_x + box_width, box_y + box_height), (0, 0, 0), -1)
         drawRectangle(self.debug, original_frame, box_x, box_y, (box_x + box_width), (box_y + box_height), color=(0, 0, 0), thickness=-1)
 
-        # Put the white text on top of the black box
-        # Adjust text position to be inside the box
+        # Put the white text on top of the black box. Adjust text position to be inside the box
         text_x = box_x + box_margin
         text_y = box_y + text_height + box_margin # Position text baseline correctly
-        # cv2.putText(original_frame, text, (text_x, text_y), font, font_scale, (255, 255, 255), font_thickness)
         drawText(self.debug, original_frame, text, text_x, text_y, color=(255, 255, 255), fontScale=font_scale, thickness=font_thickness)
         
         # if self.debug:        
@@ -641,16 +613,20 @@ class HeadCount:
         if time.time() - self.start_time > self.datasend_interval:
             total_in = self.enter_count - self.inSend
             total_out = self.exit_count - self.outSend
-            end_time = time.time()
 
-            # self.inSend = self.enter_count
-            # self.outSend = self.exit_count
+            # if there is data change, send count update
+            if not (total_in == 0 and total_out == 0): 
+                self.inSend += total_in
+                self.outSend += total_out
+                end_time = time.time()
                 
-            self.people_count_data.append({
+                self.people_count_data.append({
                     "sn": self.sn,
                     "total_in": total_in,
                     "total_out": total_out,
                     "total": total_in + total_out,
                     "start_time": time_to_string(self.start_time),
-                    "end_time": time_to_string(end_time)
-            }) # Potential memory leak, need to check. TO DO.
+                    "end_time": time_to_string(end_time),
+                })
+                self.start_time = end_time
+

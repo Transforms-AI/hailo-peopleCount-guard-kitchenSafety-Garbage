@@ -47,6 +47,7 @@ class GeneralSystem:
         print(f"Starting detector with SN: {self.sn} and local IP: {self.local_ip} with port: {self.port}")
 
         self.streamer = StreamPublisher( "live_" + self.sn, start_stream = False, host = self.local_ip, port = self.port )
+        self.mqttdata = StreamReceiver( callback_update_settings=self.on_data_received, sn=self.config['sn'], host=self.local_ip, port=1883)
 
         # Initialize data uploader
         api_url = self.config['data_send_url']
@@ -169,7 +170,7 @@ class GeneralSystem:
                     print(f"Frame no: {frame_count} at {self.strId} avg fps: {fps:.2f} and memory: {memory:.2f}%")
                     summary += f"Frame no: {frame_count} processed in {processing_time:.2f} ms with avg fps {fps:.2f} and memory: {memory}%\n"
 
-                if(frame_count >= 6000):
+                if(frame_count >= 10000):
                     summary += f"Total {frame_count} frames processed.\n\n"
                     summary += f" Total time taken {total_time:.2f} ms.\n"
                     summary += f" Average FPS: {fps:.2f}\n"
@@ -238,3 +239,9 @@ class GeneralSystem:
 
     def load_model_local(self):
         raise NotImplementedError("load_model_local() must be implemented in the child class.")
+    def on_data_received(self, config_file):
+        """
+        Callback function to handle data received from MQTT in child class.
+        """
+        raise NotImplementedError("on_data_received() must be implemented in the child class.")
+        
