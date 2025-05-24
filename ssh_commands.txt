@@ -43,8 +43,7 @@ python status_check.py
 
 # To get the ip of the device in a text file. for some reason it gives output to std error. without 2>&1 it doesn't work.
 ssh rpi1006 "ifconfig eth0 | grep 'inet ' | cut -d' ' -f10" > rpi1006_ip_mac.txt 2>&1
-# Need bash command to Read mac address of the raspberry Pi.
-and also add it to the rpi1006_ip_mac.txt. 
+# Need bash command to Read mac address of the raspberry Pi. and also add it to the rpi1006_ip_mac.txt. 
 #Read the ip_mac from the file. and edit a config file and upate the "local_ip" in the config file. config file structure below. 
 config_guard_detection.json
 {
